@@ -188,6 +188,21 @@ const m=cloneDefault();m.lighting.fixtures.push(newFixture(m));m.lighting.mode='
  const range=structuredClone(m);range.lighting.fixtures[0].beam=170;assert.throws(()=>validate(range));
 });
 
+test('projects with more than eight fixtures survive export and reload',()=>{
+ const project=createProject('Larger lighting rig');
+ const {fixtures}=project.model.lighting;
+ for(let index=0;index<12;index++)fixtures.push(newFixture(project.model));
+ const channel=fixtureChannel(fixtures.at(-1).id,'level');
+ project.rehearsal.keyframes[channel]=[{time:5,value:25,curve:'hold'}];
+ const library={version:1,projects:[project],activeId:project.id};
+ const [reloaded]=loadLibrary({getItem:key=>key===LIBRARY_KEY?JSON.stringify(library):null}).projects;
+ const imported=importProject(JSON.parse(JSON.stringify(exportProject(project))));
+ for(const restored of [reloaded,imported]){
+  assert.deepEqual(restored.model.lighting.fixtures,fixtures);
+  assert.deepEqual(restored.rehearsal.keyframes[channel],project.rehearsal.keyframes[channel]);
+ }
+});
+
 test('script lines share a continuous clock and keep the original change anchors',()=>{
  assert.equal(MOMENT_BY_ID.get('lift').start,67.2);
  assert.equal(MOMENT_BY_ID.get('passage').start,75.1);

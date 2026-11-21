@@ -1,7 +1,6 @@
 import {RIGGING} from './rigging-plan.js';
 import {CENTRE_STAGE, SOURCES, planToWorld} from './venue-plan.js';
 export {planToWorld, worldToPlan} from './venue-plan.js';
-export const MAX_LIGHTS=8;
 export const STOCK_URL = SOURCES.lanterns;
 export const FIXTURE_TYPES = {
   rj613: {label:'Robert Juliat 613SX profile',stock:9,minBeam:28,maxBeam:54,beam:38,softness:.08,length:.54,radius:.13,kind:'profile',note:'Tungsten zoom profile · standard Bridge 1 frontwash type.'},
@@ -44,7 +43,7 @@ export function newFixture(model,type='rama',selectedSail=1){
 }
 export function validateLighting(raw){
  if(raw===undefined)return defaultLighting();
- if(!raw||!['neutral','theatre'].includes(raw.mode)||!Array.isArray(raw.fixtures)||raw.fixtures.length>MAX_LIGHTS)throw Error('Invalid lighting setup (maximum 8 fixtures).');
+ if(!raw||!['neutral','theatre'].includes(raw.mode)||!Array.isArray(raw.fixtures))throw Error('Invalid lighting setup.');
  if(typeof raw.ambient!=='number'||!Number.isFinite(raw.ambient)||raw.ambient<0||raw.ambient>.3)throw Error('Invalid theatre ambient fill.');
  const ids=new Set();
  const fixtures=raw.fixtures.map(f=>{

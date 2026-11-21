@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {KeyframeField,NumberField,RangeField} from './controls.jsx';
 import {InspectorSection} from './inspector.jsx';
-import {FIXTURE_TYPES,MAX_LIGHTS,STOCK_URL,beamGeometry,aimFromAngles} from './lighting.js';
+import {FIXTURE_TYPES,STOCK_URL,beamGeometry,aimFromAngles} from './lighting.js';
 import {RIGGING, barLabel} from './rigging-plan.js';
 import {elevations,sailName} from './model.js';
 import {AMBIENT_CHANNEL,fixtureChannel,THEATRE_CHANNEL} from './rehearsal.js';
@@ -13,8 +13,8 @@ function FixtureTypes(){
  return Object.entries(FIXTURE_TYPES).map(([key,spec])=><option key={key} value={key}>{spec.label}</option>);
 }
 
-export function LightAdd({count,onAdd}){
- return <select className="entity-add" aria-label="Add light" value="" disabled={count>=MAX_LIGHTS} onChange={event=>onAdd(event.target.value)}>
+export function LightAdd({onAdd}){
+ return <select className="entity-add" aria-label="Add light" value="" onChange={event=>onAdd(event.target.value)}>
   <option value="" disabled>+ Add light</option><FixtureTypes/>
  </select>;
 }

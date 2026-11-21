@@ -13,7 +13,7 @@ import {LightingScene} from './lighting-scene.jsx';
 import {LightAdd,LightingControls} from './lighting-controls.jsx';
 import {LightingExportDialog} from './lighting-export-controls.jsx';
 import {lightingChanges,lightingTimelineCues,planLightingExport,preserveLightingGos} from './lighting-export.js';
-import {MAX_LIGHTS,newFixture} from './lighting.js';
+import {newFixture} from './lighting.js';
 import {AudioClips,DEPARTMENTS,ScriptPanel,Timeline,useTransport} from './rehearsal-controls.jsx';
 import {animationChannels,characterChannel,compileRehearsal,editSailTracks,fixtureChannel,removeCharacterKeys,removeFixtureTargets,sailChannel,setKeyframe,THEATRE_CHANNEL} from './rehearsal.js';
 import {copyProjectScript,createProject,createSampleProject,exportProject,importProject,LIBRARY_KEY,loadLibrary,replaceProjectScript,SAMPLE_PROJECT_ID} from './projects.js';
@@ -507,7 +507,6 @@ function Workspace({project,projects,editProject,onHistory,undoTarget,redoTarget
  const addLight=(type,copy)=>{
   const next=setProject(current=>{
    const {model}=current,{lighting}=model;
-   if(lighting.fixtures.length>=MAX_LIGHTS)return current;
    const fresh=newFixture(model,type,riggingSail?.id);
    const fixture=copy ? {...copy,id:fresh.id,name:`L${fresh.id}`,position:Math.min(1,copy.position+.06)} : fresh;
    return {...current,model:{...model,lighting:{...lighting,fixtures:[...lighting.fixtures,fixture]}}};
@@ -674,7 +673,6 @@ function Workspace({project,projects,editProject,onHistory,undoTarget,redoTarget
   disabled:transport.playing};
  const entityPanel=`inspector-panel-${departmentId}-${inspectorTab}`;
  const lightTabs=useMemo(()=>[{id:'room',label:'Room'},...model.lighting.fixtures.map(light=>({id:light.id,label:light.name.trim()||`L${light.id}`,off:!light.enabled}))],[model.lighting.fixtures]);
- const lightCount=model.lighting.fixtures.length;
  const characterTabs=useMemo(()=>model.characters.map(item=>({id:item.id,label:characterName(item)})),[model.characters]);
  const entities={
   set:<EntityPicker prefix="set-entity" panel={entityPanel} tabs={items} active={setItem?.id} label="Set objects" onChange={selectSetItem}>
@@ -684,9 +682,9 @@ function Workspace({project,projects,editProject,onHistory,undoTarget,redoTarget
   </EntityPicker>,
   lighting:<EntityPicker prefix="lighting-entity" panel={id=>`inspector-panel-lighting-${id==='room'?'room':settingsTab}`}
    tabs={lightTabs} active={roomSelected?'room':activeLight.id} label="Room and fixtures" onChange={selectLight}>
-   <LightAdd count={lightCount} onAdd={addLight}/>
+   <LightAdd onAdd={addLight}/>
    {activeLight&&<EntityActions label={activeLight.name||`L${activeLight.id}`} onRemove={removeLight}
-    onDuplicate={()=>addLight(activeLight.type,activeLight)} disabled={lightCount>=MAX_LIGHTS}/>}
+    onDuplicate={()=>addLight(activeLight.type,activeLight)}/>}
   </EntityPicker>,
   blocking:<EntityPicker prefix="blocking-entity" panel={entityPanel} tabs={characterTabs} active={character?.id} label="Characters" onChange={selectCharacter}>
    <button type="button" className="primary" onClick={()=>addCharacter()} disabled={characterTabs.length>=MAX_CHARACTERS}>Add character</button>
